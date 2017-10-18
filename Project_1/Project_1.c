@@ -33,7 +33,7 @@
 #define time0 P0^2
 #define time1 P0^3
 
-#define LED P1
+#define ROsswell P1
 
 void delay();
 
