@@ -33,7 +33,7 @@
 #define time0 P0^2
 #define time1 P0^3
 
-#define LED P1
+#define LEDJesus P1
 
 void delay();
 
@@ -64,7 +64,15 @@ void delay(){
 	
 	/*
 	
-	
+	this is a test
+	comment
+	let
+	find
+	out
+	if
+	this
+	breaks
+	it
 	
 	*/
 
