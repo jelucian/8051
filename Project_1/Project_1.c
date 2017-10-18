@@ -1,9 +1,13 @@
+//ROSSWELL's COMMEWNT
+
+
+
 /********************************************************************************
  *
  * Author:   Rosswell Tiongco & Jesus Luciano
  * Email:    rosswelltiongco@gmail.com & jlucian995@gmail.com
  * Filename: Project_1.c
- * Date:     
+ * Date:     10/16/17
  * Version:  1.0
  *
  * Description: 
@@ -27,6 +31,7 @@
  * 
  *******************************************************************************/
 #include<reg51.h>
+
 #define M0 P0^0
 #define M1 P0^1
 #define time0 P0^2
@@ -34,13 +39,17 @@
 
 #define LED P1
 
-void delay(int x);
+void delay();
+
 //Mode 1
 void bounce();
+
 //Mode 2
 void count();
+
 //Mode 3	
-void double();
+void doubleBounce();
+
 //Mode 4
 void stack();
 
@@ -51,12 +60,14 @@ int main(){
 	
 }
 //time delay is 1.0825us
+
 //
 void delay(){
 	int delayVal = 0;
 	
 
 }
+
 //Mode 1
 void bounce(){
 		P0 = 0x80;
@@ -87,7 +98,7 @@ void bounce(){
 }
 //Mode 2
 void count(){
-	
+	if 
 }
 //Mode 3	
 void double(){
