@@ -1,7 +1,3 @@
-//ROSSWELL's COMMEWNT
-
-
-
 /********************************************************************************
  *
  * Author:   Rosswell Tiongco & Jesus Luciano
