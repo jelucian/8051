@@ -33,7 +33,11 @@
 #define time0 P0^2
 #define time1 P0^3
 
+<<<<<<< HEAD
 #define LEDJesus P1
+=======
+#define ROsswell P1
+>>>>>>> 8a7b8e794d59ae3ea4c011b8a2b9f4066f0d7b53
 
 void delay();
 
