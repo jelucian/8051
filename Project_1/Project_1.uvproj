@@ -362,6 +362,13 @@
       <Groups>
         <Group>
           <GroupName>Source Group 1</GroupName>
+          <Files>
+            <File>
+              <FileName>Project_1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Project_1.c</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>

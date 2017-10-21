@@ -26,104 +26,156 @@
  * Mode changed only when P3.3 push button set high
  * 
  *******************************************************************************/
-#include<reg51.h>
+#include <reg51.h>
 
-#define M0 P0^0
-#define M1 P0^1
-#define time0 P0^2
-#define time1 P0^3
+//declare control bits
+sbit M0 = P0^0;
+sbit M1 = P0^1;
+sbit dir = P3^2;
+sbit D1 = P0^3;
+sbit D0 = P0^2;
 
-<<<<<<< HEAD
-#define LEDJesus P1
-=======
-#define ROsswell P1
->>>>>>> 8a7b8e794d59ae3ea4c011b8a2b9f4066f0d7b53
+unsigned int i, j, x, count, delayVal = 0;
+
+//Timer
+void timer0(void) interrupt 1{//50ms 
+	TR0 = 0;//turn timer off
+	delayVal = delayVal - 1;//decrease delay value
+	TH0 = 0x4B;//initial values
+	TL0 = 0xFD;
+//	TR0 = 1;//turn timer on
+}
 
 void delay();
 
-//Mode 1
+//Mode 0
 void bounce();
 
-//Mode 2
-void count();
+//Mode 1
+void counter();
 
-//Mode 3	
+//Mode 2	
 void doubleBounce();
 
-//Mode 4
+//Mode 3
 void stack();
-
+/********************************************************/
 int main(){
+	//Interrupt enable
+	EA = 1;
+	ET0 = 1;
 	
+	//Timer enable
+	TMOD = 0x01;//timer 0 mode 1
+	TH0 = 0x4B;//high bit value
+	TL0 = 0xFD;//low bit value
+	TR0 = 0;//turn off timer 0
 	
+	//I/O
+	//Inputs
+	P0 = 0xFF;
+	P3 = 0xFF;
 	
-	
-}
-//time delay is 1.0825us
+	//Outputs
+	P1 = 0x00;
 
-//
-void delay(){
-	int delayVal = 0;
-	
-	
-	/*
-	
-	this is a test
-	comment
-	let
-	find
-	out
-	if
-	this
-	breaks
-	it
-	
-	*/
-
-}
-
-//Mode 1
-void bounce(){
-		P0 = 0x80;
-		int i = 0;
-	while(~M0 & ~M1){
-		if(i < 7){
-			i++;
-			P0 >>= 1;
-		}
-		else if(i < 14){
-			i++;
-			P0 <<= 1;
-		}
-		else{
-			i = 0;
-		}
+	//super loop
+	while(1){
+		//call all 4 functions, each one checks seperately
+		//if mode bits are correct
+		bounce();
+		counter();
 		
 	}
-	/*
-	for(int i = 0; i < 7; ++i){
-		P0 >>= 1;
-	}
-	for(int i = 0; i < 7; ++i){
-		P0 <<= 1;
-	}
-	*/
 	
+}
+/********************************************************/
+//time delay is 1.0825us
+//<<Timing not currently accurate
+void delay(){
+	//Delay 0 = 0.1 sec
+	if(~D1 & ~D0){
+		delayVal = 50;
+	}
+	//Delay 1 = 0.5 sec
+	else if(~D1 & D0){
+		delayVal = 250;
+	}
+	//Delay 2 = 1 sec
+	else if(D1 & ~D0){
+		delayVal = 500;
+	}
+	//Delay 3 = 2 sec
+	else{
+		delayVal = 1000;
+	}
+	//stay in loop with timer 0 on until
+	//delayVal = 0
+	//delayVal decreases once every 5ms
+	while(delayVal > 0){
+			TR0 = 1;
+	}
+	TR0 = 0;
+}
+
+//Mode 0
+void bounce(){
+	//set initial value
+	P1 = 0x80;
+	x = 0;
+	//Continuously checks if still in mode 0 every loop
+	while(~M1 & ~M0){
+		//move left 7 times
+		if(x < 7){
+			P1 = P1 / 2 ;
+			x = x+1;
+		}
+		//move right 7 times
+		else if(x < 14){
+			P1 = P1 * 2;
+			x = x+1;
+		}
+		//reset counter
+		else{
+			x = 0;
+		}
+		//call delay after every change
+		delay();
+	}
+	
+}
+//Mode 1
+void counter(){
+	//only pulls bits P0^7-P0^4
+	count = P0 / 16;
+	//continuously checks if in mode 1
+	while(~M1 & M0){
+		P1 = count;
+		//increases counter if P3^2 is high
+		if(dir == 1){
+			count = count + 1;
+		}
+		//decreases counter if P3^2 is low
+		else{
+			count = count - 1;
+		}
+		//checks if count is out of bounds and resets
+		if(count == 16){
+			count = 0; 
+		}
+		if(count == -1){
+			count = 15;
+		}
+		//call delay after every iteration
+		delay();
+	}
 }
 //Mode 2
-void count(){
-	if 
-}
-//Mode 3	
-void double(){
+void doubleBounce(){
 	
 }
-//Mode 4
+//Mode 3
 void stack(){
 	
 }
 
-
-
-
-//commment Jesus
