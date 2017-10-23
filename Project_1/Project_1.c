@@ -175,33 +175,35 @@ void counter(){
 }
 //Mode 2
 void doubleBounce(){
-	/*
 	//set initial value
 	P1 = 0x81;
-	
-	//leftBounce = P0 / 10;
-	rightBounce = P0 / 16;
-	x = 0;
+	x = 0x80;
+	y = 0x01;
+	count = 0;
 	//Continuously checks if still in mode 2 every loop
 	while(M1 & ~M0){
 		//Both sides shift 7 times
-		if(x < 7){
-			P1 = LeftBounce | rightBounce;
-			x = x++;
+		if(count < 7){
+			P1 = x | y;
+			x = x / 2;
+			y = y * 2;
+			count++;
 		}
-		//Both sides shift 7 times back
-		else if(x < 14){
-			P1 = (P1 * 2) | P1;
-			x = x++;
+		else if (count < 14){
+			P1 = x | y;
+			x = x * 2;
+			y = y / 2;
+			count++;
 		}
-		//reset counter
+		//reset counter and dummy switches
 		else{
-			x = 0;
+			count = 0;
+			x = 0x80;
+			y = 0x01;
 		}
 		//call delay after every change
 		delay();
 	}
-	*/
 }
 //Mode 3
 void stack(){
