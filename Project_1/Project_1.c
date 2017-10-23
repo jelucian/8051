@@ -35,7 +35,7 @@ sbit dir = P3^2;
 sbit D1 = P0^3;
 sbit D0 = P0^2;
 
-unsigned int i, j, x, count, delayVal = 0;
+unsigned int i, j, x, y, count, delayVal = 0;
 
 //Timer
 void timer0(void) interrupt 1{//50ms 
@@ -85,13 +85,15 @@ int main(){
 		//if mode bits are correct
 		bounce();
 		counter();
-		
+		doubleBounce();
+		stack();
 	}
 	
 }
 /********************************************************/
 //time delay is 1.0825us
 //<<Timing not currently accurate
+
 void delay(){
 	//Delay 0 = 0.1 sec
 	if(~D1 & ~D0){
@@ -117,6 +119,7 @@ void delay(){
 	}
 	TR0 = 0;
 }
+
 
 //Mode 0
 void bounce(){
@@ -147,7 +150,7 @@ void bounce(){
 //Mode 1
 void counter(){
 	//only pulls bits P0^7-P0^4
-	count = P0 / 16;
+	count = P0 / 16;  //FIXME: What does this line do? Seems to work when uncommented
 	//continuously checks if in mode 1
 	while(~M1 & M0){
 		P1 = count;
@@ -172,10 +175,64 @@ void counter(){
 }
 //Mode 2
 void doubleBounce(){
+	/*
+	//set initial value
+	P1 = 0x81;
 	
+	//leftBounce = P0 / 10;
+	rightBounce = P0 / 16;
+	x = 0;
+	//Continuously checks if still in mode 2 every loop
+	while(M1 & ~M0){
+		//Both sides shift 7 times
+		if(x < 7){
+			P1 = LeftBounce | rightBounce;
+			x = x++;
+		}
+		//Both sides shift 7 times back
+		else if(x < 14){
+			P1 = (P1 * 2) | P1;
+			x = x++;
+		}
+		//reset counter
+		else{
+			x = 0;
+		}
+		//call delay after every change
+		delay();
+	}
+	*/
 }
 //Mode 3
 void stack(){
-	
-}
+		//set initial value
+	P1 = 0x00;
+	//couldn't get it to work with the same variable (step through xor process)
+	x = 0x80;
+	y = 0x01;
+	count = 0;
+	//Continuously checks if still in mode 0 every loop
+	while(M1 & M0){
+		//Stack 8 times
+		if(count < 8){
+			P1 = P1 ^ x;
+			x = x/2;
+			count++;
+		}
+		else if (count < 16){
+			P1 = P1 ^ y;
+			y = y*2;
+			count++;
+		}
+		//reset x and y to original values, otherwise they would take in their old values
+		else{
+			count = 0;
+			x = 0x80;
+			y = 0x01;
+		}
+				
+		//call delay after every change
+		delay();
+		}
 
+	}
