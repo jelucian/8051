@@ -1,4 +1,4 @@
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/22/2017 22:52:52 PAGE 1   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE PROJECT_1
@@ -62,7 +62,7 @@ line level    source
   52          void bounce();
   53          
   54          //Mode 1
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/22/2017 22:52:52 PAGE 2   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 2   
 
   55          void counter();
   56          
@@ -126,7 +126,7 @@ line level    source
  114   1        //stay in loop with timer 0 on until
  115   1        //delayVal = 0
  116   1        //delayVal decreases once every 5ms
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/22/2017 22:52:52 PAGE 3   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 3   
 
  117   1        while(delayVal > 0){
  118   2            TR0 = 1;
@@ -190,7 +190,7 @@ line level    source
  176          //Mode 2
  177          void doubleBounce(){
  178   1        //set initial value
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/22/2017 22:52:52 PAGE 4   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 4   
 
  179   1        P1 = 0x81;
  180   1        x = 0x80;
@@ -254,7 +254,7 @@ line level    source
  238   2          }
  239   1      
  240   1        }
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/22/2017 22:52:52 PAGE 5   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 5   
 
 
 

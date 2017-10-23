@@ -175,6 +175,8 @@ void counter(){
 }
 //Mode 2
 void doubleBounce(){
+	//Left << 1 | Right >> 1
+	//Can also be done as: (0x80>>iteration) | (0x01 << iteration)
 	//set initial value
 	P1 = 0x81;
 	x = 0x80;
@@ -207,6 +209,7 @@ void doubleBounce(){
 }
 //Mode 3
 void stack(){
+	//Can also be done as LED | LED>>1
 		//set initial value
 	P1 = 0x00;
 	//couldn't get it to work with the same variable (step through xor process)
