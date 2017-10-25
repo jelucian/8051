@@ -1,10 +1,10 @@
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 1   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE PROJECT_1
 OBJECT MODULE PLACED IN .\Objects\Project_1.obj
-COMPILER INVOKED BY: C:\Program Files\C51\BIN\C51.EXE Project_1.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Li
-                    -stings\Project_1.lst) TABS(2) OBJECT(.\Objects\Project_1.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE Project_1.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings
+                    -\Project_1.lst) TABS(2) OBJECT(.\Objects\Project_1.obj)
 
 line level    source
 
@@ -44,228 +44,249 @@ line level    source
   34          sbit dir = P3^2;
   35          sbit D1 = P0^3;
   36          sbit D0 = P0^2;
-  37          
-  38          unsigned int i, j, x, y, count, delayVal = 0;
-  39          
-  40          //Timer
-  41          void timer0(void) interrupt 1{//50ms 
-  42   1        TR0 = 0;//turn timer off
-  43   1        delayVal = delayVal - 1;//decrease delay value
-  44   1        TH0 = 0x4B;//initial values
-  45   1        TL0 = 0xFD;
-  46   1      //  TR0 = 1;//turn timer on
-  47   1      }
-  48          
-  49          void delay();
-  50          
-  51          //Mode 0
-  52          void bounce();
-  53          
-  54          //Mode 1
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 2   
+  37          bit varM1 = 0;
+  38          bit varM0 = 0;
+  39          int direction = 1;
+  40          
+  41          unsigned int i, j, x, y, count, delayVal = 0;
+  42          
+  43          //Timer
+  44          void timer0(void) interrupt 1{//50ms 
+  45   1        TR0 = 0;//turn timer off
+  46   1        delayVal = delayVal - 1;//decrease delay value
+  47   1        TH0 = 0x4B;//initial values
+  48   1        TL0 = 0xFD;
+  49   1      //  TR0 = 1;//turn timer on
+  50   1      }
+  51          void changeMode() interrupt 2{
+  52   1        varM0 = M0;
+  53   1        varM1 = M1;
+  54   1        
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 2   
 
-  55          void counter();
-  56          
-  57          //Mode 2  
-  58          void doubleBounce();
-  59          
-  60          //Mode 3
-  61          void stack();
-  62          /********************************************************/
-  63          int main(){
-  64   1        //Interrupt enable
-  65   1        EA = 1;
-  66   1        ET0 = 1;
-  67   1        
-  68   1        //Timer enable
-  69   1        TMOD = 0x01;//timer 0 mode 1
-  70   1        TH0 = 0x4B;//high bit value
-  71   1        TL0 = 0xFD;//low bit value
-  72   1        TR0 = 0;//turn off timer 0
-  73   1        
-  74   1        //I/O
-  75   1        //Inputs
-  76   1        P0 = 0xFF;
-  77   1        P3 = 0xFF;
-  78   1        
-  79   1        //Outputs
-  80   1        P1 = 0x00;
-  81   1      
-  82   1        //super loop
-  83   1        while(1){
-  84   2          //call all 4 functions, each one checks seperately
-  85   2          //if mode bits are correct
-  86   2          bounce();
-  87   2          counter();
-  88   2          doubleBounce();
-  89   2          stack();
-  90   2        }
-  91   1        
-  92   1      }
-  93          /********************************************************/
-  94          //time delay is 1.0825us
-  95          //<<Timing not currently accurate
-  96          
-  97          void delay(){
-  98   1        //Delay 0 = 0.1 sec
-  99   1        if(~D1 & ~D0){
- 100   2          delayVal = 50;
- 101   2        }
- 102   1        //Delay 1 = 0.5 sec
- 103   1        else if(~D1 & D0){
- 104   2          delayVal = 250;
- 105   2        }
- 106   1        //Delay 2 = 1 sec
- 107   1        else if(D1 & ~D0){
- 108   2          delayVal = 500;
- 109   2        }
- 110   1        //Delay 3 = 2 sec
- 111   1        else{
- 112   2          delayVal = 1000;
- 113   2        }
- 114   1        //stay in loop with timer 0 on until
- 115   1        //delayVal = 0
- 116   1        //delayVal decreases once every 5ms
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 3   
+  55   1      }
+  56          void changeDir() interrupt 0{
+  57   1        if(direction == 1)
+  58   1          direction = -1;
+  59   1        else
+  60   1          direction = 1;
+  61   1      }
+  62          
+  63          void delay();
+  64          
+  65          //Mode 0
+  66          void bounce();
+  67          
+  68          //Mode 1
+  69          void counter();
+  70          
+  71          //Mode 2  
+  72          void doubleBounce();
+  73          
+  74          //Mode 3
+  75          void stack();
+  76          /********************************************************/
+  77          int main(){
+  78   1        //Interrupt enable
+  79   1        EA = 1;
+  80   1        ET0 = 1;
+  81   1        
+  82   1        //Timer enable
+  83   1        TMOD = 0x01;//timer 0 mode 1
+  84   1        TH0 = 0x4B;//high bit value
+  85   1        TL0 = 0x92;//low bit value
+  86   1        TR0 = 0;//turn off timer 0
+  87   1        
+  88   1        //enable external interrupts
+  89   1        EX1 = 1;
+  90   1        EX0 = 1;
+  91   1        //I/O
+  92   1        //Inputs
+  93   1        P0 = 0xFF;
+  94   1        P3 = 0xFF;
+  95   1        
+  96   1        //Outputs
+  97   1        P1 = 0x00;
+  98   1      
+  99   1        //super loop
+ 100   1        while(1){
+ 101   2          //call all 4 functions, each one checks seperately
+ 102   2          //if mode bits are correct
+ 103   2          bounce();
+ 104   2          counter();
+ 105   2          doubleBounce();
+ 106   2          stack();
+ 107   2        }
+ 108   1        
+ 109   1      }
+ 110          /********************************************************/
+ 111          //time delay is 1.0825us
+ 112          //<<Timing not currently accurate
+ 113          
+ 114          void delay(){
+ 115   1        //Delay 0 = 0.1 sec
+ 116   1        if(~D1 & ~D0){
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 3   
 
- 117   1        while(delayVal > 0){
- 118   2            TR0 = 1;
- 119   2        }
- 120   1        TR0 = 0;
- 121   1      }
- 122          
- 123          
- 124          //Mode 0
- 125          void bounce(){
- 126   1        //set initial value
- 127   1        P1 = 0x80;
- 128   1        x = 0;
- 129   1        //Continuously checks if still in mode 0 every loop
- 130   1        while(~M1 & ~M0){
- 131   2          //move left 7 times
- 132   2          if(x < 7){
- 133   3            P1 = P1 / 2 ;
- 134   3            x = x+1;
- 135   3          }
- 136   2          //move right 7 times
- 137   2          else if(x < 14){
- 138   3            P1 = P1 * 2;
- 139   3            x = x+1;
- 140   3          }
- 141   2          //reset counter
- 142   2          else{
- 143   3            x = 0;
- 144   3          }
- 145   2          //call delay after every change
- 146   2          delay();
- 147   2        }
- 148   1        
- 149   1      }
- 150          //Mode 1
- 151          void counter(){
- 152   1        //only pulls bits P0^7-P0^4
- 153   1        count = P0 / 16;  //FIXME: What does this line do? Seems to work when uncommented
- 154   1        //continuously checks if in mode 1
- 155   1        while(~M1 & M0){
- 156   2          P1 = count;
- 157   2          //increases counter if P3^2 is high
- 158   2          if(dir == 1){
- 159   3            count = count + 1;
- 160   3          }
- 161   2          //decreases counter if P3^2 is low
- 162   2          else{
- 163   3            count = count - 1;
- 164   3          }
- 165   2          //checks if count is out of bounds and resets
- 166   2          if(count == 16){
- 167   3            count = 0; 
- 168   3          }
- 169   2          if(count == -1){
- 170   3            count = 15;
- 171   3          }
- 172   2          //call delay after every iteration
- 173   2          delay();
- 174   2        }
- 175   1      }
- 176          //Mode 2
- 177          void doubleBounce(){
- 178   1        //set initial value
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 4   
+ 117   2          delayVal = 2;
+ 118   2        }
+ 119   1        //Delay 1 = 0.5 sec
+ 120   1        else if(~D1 & D0){
+ 121   2          delayVal = 10;
+ 122   2        }
+ 123   1        //Delay 2 = 1 sec
+ 124   1        else if(D1 & ~D0){
+ 125   2          delayVal = 20;
+ 126   2        }
+ 127   1        //Delay 3 = 2 sec
+ 128   1        else{
+ 129   2          delayVal = 40;
+ 130   2        }
+ 131   1        //stay in loop with timer 0 on until
+ 132   1        //delayVal = 0
+ 133   1        //delayVal decreases once every 5ms
+ 134   1        while(delayVal > 0){
+ 135   2            TR0 = 1;
+ 136   2        }
+ 137   1        TR0 = 0;
+ 138   1      }
+ 139          
+ 140          
+ 141          //Mode 0
+ 142          void bounce(){
+ 143   1        //set initial value
+ 144   1        P1 = 0x80;
+ 145   1        x = 0;
+ 146   1        //Continuously checks if still in mode 0 every loop
+ 147   1        while(~varM1 & ~varM0){
+ 148   2          //move left 7 times
+ 149   2          if(x < 7){
+ 150   3            P1 = P1 / 2 ;
+ 151   3            x = x+1;
+ 152   3          }
+ 153   2          //move right 7 times
+ 154   2          else if(x < 14){
+ 155   3            P1 = P1 * 2;
+ 156   3            x = x+1;
+ 157   3          }
+ 158   2          //reset counter
+ 159   2          else{
+ 160   3            x = 0;
+ 161   3          }
+ 162   2          //call delay after every change
+ 163   2          delay();
+ 164   2        }
+ 165   1        
+ 166   1      }
+ 167          //Mode 1
+ 168          void counter(){
+ 169   1        //only pulls bits P0^7-P0^4
+ 170   1        count = P0 / 16;  //FIXME: What does this line do? Seems to work when uncommented
+ 171   1        //continuously checks if in mode 1
+ 172   1        while(~varM1 & varM0){
+ 173   2          P1 = count;
+ 174   2          //increases counter if P3^2 is high
+ 175   2          //if(~direction){
+ 176   2            count = count + direction;
+ 177   2          //}
+ 178   2          //decreases counter if P3^2 is low
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 4   
 
- 179   1        P1 = 0x81;
- 180   1        x = 0x80;
- 181   1        y = 0x01;
- 182   1        count = 0;
- 183   1        //Continuously checks if still in mode 2 every loop
- 184   1        while(M1 & ~M0){
- 185   2          //Both sides shift 7 times
- 186   2          if(count < 7){
- 187   3            P1 = x | y;
- 188   3            x = x / 2;
- 189   3            y = y * 2;
- 190   3            count++;
- 191   3          }
- 192   2          else if (count < 14){
- 193   3            P1 = x | y;
- 194   3            x = x * 2;
- 195   3            y = y / 2;
- 196   3            count++;
- 197   3          }
- 198   2          //reset counter and dummy switches
- 199   2          else{
- 200   3            count = 0;
- 201   3            x = 0x80;
- 202   3            y = 0x01;
- 203   3          }
- 204   2          //call delay after every change
- 205   2          delay();
- 206   2        }
- 207   1      }
- 208          //Mode 3
- 209          void stack(){
- 210   1          //set initial value
- 211   1        P1 = 0x00;
- 212   1        //couldn't get it to work with the same variable (step through xor process)
- 213   1        x = 0x80;
- 214   1        y = 0x01;
- 215   1        count = 0;
- 216   1        //Continuously checks if still in mode 0 every loop
- 217   1        while(M1 & M0){
- 218   2          //Stack 8 times
- 219   2          if(count < 8){
- 220   3            P1 = P1 ^ x;
- 221   3            x = x/2;
- 222   3            count++;
+ 179   2          /*else{
+ 180   2            count = count - 1;
+ 181   2          }*/
+ 182   2          
+ 183   2          //checks if count is out of bounds and resets
+ 184   2          if(count == 16){
+ 185   3            count = 0; 
+ 186   3          }
+ 187   2          if(count == -1){
+ 188   3            count = 15;
+ 189   3          }
+ 190   2          //call delay after every iteration
+ 191   2          delay();
+ 192   2        }
+ 193   1      }
+ 194          //Mode 2
+ 195          void doubleBounce(){
+ 196   1        //Left << 1 | Right >> 1
+ 197   1        //Can also be done as: (0x80>>iteration) | (0x01 << iteration)
+ 198   1        //set initial value
+ 199   1        P1 = 0x81;
+ 200   1        x = 0x80;
+ 201   1        y = 0x01;
+ 202   1        count = 0;
+ 203   1        //Continuously checks if still in mode 2 every loop
+ 204   1        while(varM1 & ~varM0){
+ 205   2          //Both sides shift 7 times
+ 206   2          if(count < 7){
+ 207   3            P1 = x | y;
+ 208   3            x = x / 2;
+ 209   3            y = y * 2;
+ 210   3            count++;
+ 211   3          }
+ 212   2          else if (count < 14){
+ 213   3            P1 = x | y;
+ 214   3            x = x * 2;
+ 215   3            y = y / 2;
+ 216   3            count++;
+ 217   3          }
+ 218   2          //reset counter and dummy switches
+ 219   2          else{
+ 220   3            count = 0;
+ 221   3            x = 0x80;
+ 222   3            y = 0x01;
  223   3          }
- 224   2          else if (count < 16){
- 225   3            P1 = P1 ^ y;
- 226   3            y = y*2;
- 227   3            count++;
- 228   3          }
- 229   2          //reset x and y to original values, otherwise they would take in their old values
- 230   2          else{
- 231   3            count = 0;
- 232   3            x = 0x80;
- 233   3            y = 0x01;
- 234   3          }
- 235   2              
- 236   2          //call delay after every change
- 237   2          delay();
- 238   2          }
- 239   1      
- 240   1        }
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/23/2017 08:54:06 PAGE 5   
+ 224   2          //call delay after every change
+ 225   2          delay();
+ 226   2        }
+ 227   1      }
+ 228          //Mode 3
+ 229          void stack(){
+ 230   1        //Can also be done as LED | LED>>1
+ 231   1          //set initial value
+ 232   1        P1 = 0x00;
+ 233   1        //couldn't get it to work with the same variable (step through xor process)
+ 234   1        x = 0x80;
+ 235   1        y = 0x01;
+ 236   1        count = 0;
+ 237   1        //Continuously checks if still in mode 0 every loop
+ 238   1        while(varM1 & varM0){
+ 239   2          //Stack 8 times
+ 240   2          if(count < 8){
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 5   
 
+ 241   3            P1 = P1 ^ x;
+ 242   3            x = x/2;
+ 243   3            count++;
+ 244   3          }
+ 245   2          else if (count < 16){
+ 246   3            P1 = P1 ^ y;
+ 247   3            y = y*2;
+ 248   3            count++;
+ 249   3          }
+ 250   2          //reset x and y to original values, otherwise they would take in their old values
+ 251   2          else{
+ 252   3            count = 0;
+ 253   3            x = 0x80;
+ 254   3            y = 0x01;
+ 255   3          }
+ 256   2              
+ 257   2          //call delay after every change
+ 258   2          delay();
+ 259   2          }
+ 260   1      
+ 261   1        }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    541    ----
+   CODE SIZE        =    576    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     12    ----
+   DATA SIZE        =     14    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
+   BIT SIZE         =      2    ----
 END OF MODULE INFORMATION.
 
 

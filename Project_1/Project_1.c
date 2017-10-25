@@ -34,6 +34,9 @@ sbit M1 = P0^1;
 sbit dir = P3^2;
 sbit D1 = P0^3;
 sbit D0 = P0^2;
+bit varM1 = 0;
+bit varM0 = 0;
+int direction = 1;
 
 unsigned int i, j, x, y, count, delayVal = 0;
 
@@ -44,6 +47,17 @@ void timer0(void) interrupt 1{//50ms
 	TH0 = 0x4B;//initial values
 	TL0 = 0xFD;
 //	TR0 = 1;//turn timer on
+}
+void changeMode() interrupt 2{
+	varM0 = M0;
+	varM1 = M1;
+	
+}
+void changeDir() interrupt 0{
+	if(direction == 1)
+		direction = -1;
+	else
+		direction = 1;
 }
 
 void delay();
@@ -68,9 +82,12 @@ int main(){
 	//Timer enable
 	TMOD = 0x01;//timer 0 mode 1
 	TH0 = 0x4B;//high bit value
-	TL0 = 0xFD;//low bit value
+	TL0 = 0x92;//low bit value
 	TR0 = 0;//turn off timer 0
 	
+	//enable external interrupts
+	EX1 = 1;
+	EX0 = 1;
 	//I/O
 	//Inputs
 	P0 = 0xFF;
@@ -97,19 +114,19 @@ int main(){
 void delay(){
 	//Delay 0 = 0.1 sec
 	if(~D1 & ~D0){
-		delayVal = 50;
+		delayVal = 2;
 	}
 	//Delay 1 = 0.5 sec
 	else if(~D1 & D0){
-		delayVal = 250;
+		delayVal = 10;
 	}
 	//Delay 2 = 1 sec
 	else if(D1 & ~D0){
-		delayVal = 500;
+		delayVal = 20;
 	}
 	//Delay 3 = 2 sec
 	else{
-		delayVal = 1000;
+		delayVal = 40;
 	}
 	//stay in loop with timer 0 on until
 	//delayVal = 0
@@ -127,7 +144,7 @@ void bounce(){
 	P1 = 0x80;
 	x = 0;
 	//Continuously checks if still in mode 0 every loop
-	while(~M1 & ~M0){
+	while(~varM1 & ~varM0){
 		//move left 7 times
 		if(x < 7){
 			P1 = P1 / 2 ;
@@ -152,16 +169,17 @@ void counter(){
 	//only pulls bits P0^7-P0^4
 	count = P0 / 16;  //FIXME: What does this line do? Seems to work when uncommented
 	//continuously checks if in mode 1
-	while(~M1 & M0){
+	while(~varM1 & varM0){
 		P1 = count;
 		//increases counter if P3^2 is high
-		if(dir == 1){
-			count = count + 1;
-		}
+		//if(~direction){
+			count = count + direction;
+		//}
 		//decreases counter if P3^2 is low
-		else{
+		/*else{
 			count = count - 1;
-		}
+		}*/
+		
 		//checks if count is out of bounds and resets
 		if(count == 16){
 			count = 0; 
@@ -183,7 +201,7 @@ void doubleBounce(){
 	y = 0x01;
 	count = 0;
 	//Continuously checks if still in mode 2 every loop
-	while(M1 & ~M0){
+	while(varM1 & ~varM0){
 		//Both sides shift 7 times
 		if(count < 7){
 			P1 = x | y;
@@ -217,7 +235,7 @@ void stack(){
 	y = 0x01;
 	count = 0;
 	//Continuously checks if still in mode 0 every loop
-	while(M1 & M0){
+	while(varM1 & varM0){
 		//Stack 8 times
 		if(count < 8){
 			P1 = P1 ^ x;
