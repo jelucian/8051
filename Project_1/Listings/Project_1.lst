@@ -1,4 +1,4 @@
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 1   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/26/2017 15:30:05 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE PROJECT_1
@@ -51,18 +51,18 @@ line level    source
   41          unsigned int i, j, x, y, count, delayVal = 0;
   42          
   43          //Timer
-  44          void timer0(void) interrupt 1{//50ms 
-  45   1        TR0 = 0;//turn timer off
+  44          void timer0(void) interrupt 3{//50ms 
+  45   1        TR1 = 0;//turn timer off
   46   1        delayVal = delayVal - 1;//decrease delay value
-  47   1        TH0 = 0x4B;//initial values
-  48   1        TL0 = 0xFD;
+  47   1        TH1 = 0x4B;//initial values
+  48   1        TL1 = 0x92;
   49   1      //  TR0 = 1;//turn timer on
   50   1      }
   51          void changeMode() interrupt 2{
   52   1        varM0 = M0;
   53   1        varM1 = M1;
   54   1        
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 2   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/26/2017 15:30:05 PAGE 2   
 
   55   1      }
   56          void changeDir() interrupt 0{
@@ -89,13 +89,13 @@ line level    source
   77          int main(){
   78   1        //Interrupt enable
   79   1        EA = 1;
-  80   1        ET0 = 1;
+  80   1        ET1 = 1;//IE = 0x82; == 1000_0010
   81   1        
   82   1        //Timer enable
-  83   1        TMOD = 0x01;//timer 0 mode 1
-  84   1        TH0 = 0x4B;//high bit value
-  85   1        TL0 = 0x92;//low bit value
-  86   1        TR0 = 0;//turn off timer 0
+  83   1        TMOD = 0x10;//timer 0 mode 1
+  84   1        TH1 = 0x4B;//high bit value
+  85   1        TL1 = 0x92;//low bit value
+  86   1        TR1 = 0;//turn off timer 0
   87   1        
   88   1        //enable external interrupts
   89   1        EX1 = 1;
@@ -126,7 +126,7 @@ line level    source
  114          void delay(){
  115   1        //Delay 0 = 0.1 sec
  116   1        if(~D1 & ~D0){
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 3   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/26/2017 15:30:05 PAGE 3   
 
  117   2          delayVal = 2;
  118   2        }
@@ -146,9 +146,9 @@ line level    source
  132   1        //delayVal = 0
  133   1        //delayVal decreases once every 5ms
  134   1        while(delayVal > 0){
- 135   2            TR0 = 1;
+ 135   2            TR1 = 1;
  136   2        }
- 137   1        TR0 = 0;
+ 137   1        TR1 = 0;
  138   1      }
  139          
  140          
@@ -190,7 +190,7 @@ line level    source
  176   2            count = count + direction;
  177   2          //}
  178   2          //decreases counter if P3^2 is low
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 4   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/26/2017 15:30:05 PAGE 4   
 
  179   2          /*else{
  180   2            count = count - 1;
@@ -254,7 +254,7 @@ line level    source
  238   1        while(varM1 & varM0){
  239   2          //Stack 8 times
  240   2          if(count < 8){
-C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/24/2017 18:48:06 PAGE 5   
+C51 COMPILER V9.56.0.0   PROJECT_1                                                         10/26/2017 15:30:05 PAGE 5   
 
  241   3            P1 = P1 ^ x;
  242   3            x = x/2;
@@ -276,7 +276,7 @@ line level    source
  258   2          delay();
  259   2          }
  260   1      
- 261   1        }
+ 261   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

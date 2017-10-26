@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        10/24/2017  18:48:07  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        10/26/2017  15:30:06  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
@@ -32,11 +32,11 @@ LINK MAP OF MODULE:  .\Objects\Project_1 (PROJECT_1)
             * * * * * * *   C O D E   M E M O R Y   * * * * * * *
             CODE    0000H     0003H     ABSOLUTE     
             CODE    0003H     0003H     ABSOLUTE     
-                    0006H     0005H                  *** GAP ***
-            CODE    000BH     0003H     ABSOLUTE     
-                    000EH     0005H                  *** GAP ***
+                    0006H     000DH                  *** GAP ***
             CODE    0013H     0003H     ABSOLUTE     
-                    0016H     07EAH                  *** GAP ***
+                    0016H     0005H                  *** GAP ***
+            CODE    001BH     0003H     ABSOLUTE     
+                    001EH     07E2H                  *** GAP ***
             CODE    0800H     0091H     UNIT         ?PR?DOUBLEBOUNCE?PROJECT_1
             CODE    0891H     008CH     UNIT         ?C_C51STARTUP
             CODE    091DH     0074H     UNIT         ?PR?STACK?PROJECT_1
@@ -59,7 +59,7 @@ SEGMENT
 ---------------------
 ?C_C51STARTUP
   +--> ?PR?MAIN?PROJECT_1
-BL51 BANKED LINKER/LOCATER V6.22                                                      10/24/2017  18:48:07  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/26/2017  15:30:06  PAGE 2
 
 
   +--> ?C_INITSEG
@@ -107,19 +107,19 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project_1 (PROJECT_1)
   D:000CH         PUBLIC        direction
   B:0020H.0       PUBLIC        varM0
   B:0020H.1       PUBLIC        varM1
-  B:00A8H.1       PUBLIC        ET0
-  D:008CH         PUBLIC        TH0
+  B:00A8H.3       PUBLIC        ET1
   B:00A8H.0       PUBLIC        EX0
+  D:008DH         PUBLIC        TH1
   B:00A8H.2       PUBLIC        EX1
-  D:008AH         PUBLIC        TL0
+  D:008BH         PUBLIC        TL1
   C:0AAAH         PUBLIC        timer0
-  B:0088H.4       PUBLIC        TR0
+  B:0088H.6       PUBLIC        TR1
   C:0800H         PUBLIC        doubleBounce
   D:000EH         PUBLIC        i
   D:0010H         PUBLIC        j
   C:0ABFH         PUBLIC        changeMode
   B:0080H.2       PUBLIC        D0
-BL51 BANKED LINKER/LOCATER V6.22                                                      10/24/2017  18:48:07  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/26/2017  15:30:06  PAGE 3
 
 
   B:0080H.3       PUBLIC        D1
@@ -179,7 +179,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project_1 (PROJECT_1)
   C:09FEH         LINE#         124
   C:0A04H         LINE#         125
   C:0A0AH         LINE#         126
-BL51 BANKED LINKER/LOCATER V6.22                                                      10/24/2017  18:48:07  PAGE 4
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/26/2017  15:30:06  PAGE 4
 
 
   C:0A0CH         LINE#         128
@@ -239,7 +239,7 @@ SYMBOL TABLE OF MODULE:  .\Objects\Project_1 (PROJECT_1)
   C:082BH         LINE#         208
   C:0836H         LINE#         209
   C:0841H         LINE#         210
-BL51 BANKED LINKER/LOCATER V6.22                                                      10/24/2017  18:48:07  PAGE 5
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/26/2017  15:30:06  PAGE 5
 
 
   C:0849H         LINE#         211

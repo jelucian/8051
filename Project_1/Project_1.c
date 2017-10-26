@@ -41,7 +41,7 @@ int direction = 1;
 unsigned int i, j, x, y, count, delayVal = 0;
 
 //Timer
-void timer0(void) interrupt 1{//50ms 
+void timer1(void) interrupt 3{//50ms 
 	TR1 = 0;//turn timer off
 	delayVal = delayVal - 1;//decrease delay value
 	TH1 = 0x4B;//initial values
