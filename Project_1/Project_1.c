@@ -42,10 +42,10 @@ unsigned int i, j, x, y, count, delayVal = 0;
 
 //Timer
 void timer0(void) interrupt 1{//50ms 
-	TR0 = 0;//turn timer off
+	TR1 = 0;//turn timer off
 	delayVal = delayVal - 1;//decrease delay value
-	TH0 = 0x4B;//initial values
-	TL0 = 0xFD;
+	TH1 = 0x4B;//initial values
+	TL1 = 0x92;
 //	TR0 = 1;//turn timer on
 }
 void changeMode() interrupt 2{
@@ -77,13 +77,13 @@ void stack();
 int main(){
 	//Interrupt enable
 	EA = 1;
-	ET0 = 1;
+	ET1 = 1;//IE = 0x82; == 1000_0010
 	
 	//Timer enable
-	TMOD = 0x01;//timer 0 mode 1
-	TH0 = 0x4B;//high bit value
-	TL0 = 0x92;//low bit value
-	TR0 = 0;//turn off timer 0
+	TMOD = 0x10;//timer 0 mode 1
+	TH1 = 0x4B;//high bit value
+	TL1 = 0x92;//low bit value
+	TR1 = 0;//turn off timer 0
 	
 	//enable external interrupts
 	EX1 = 1;
@@ -132,9 +132,9 @@ void delay(){
 	//delayVal = 0
 	//delayVal decreases once every 5ms
 	while(delayVal > 0){
-			TR0 = 1;
+			TR1 = 1;
 	}
-	TR0 = 0;
+	TR1 = 0;
 }
 
 
@@ -258,4 +258,4 @@ void stack(){
 		delay();
 		}
 
-	}
+}
