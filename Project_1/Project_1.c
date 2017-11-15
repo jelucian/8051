@@ -80,7 +80,7 @@ int main(){
 	ET1 = 1;//IE = 0x82; == 1000_0010
 	
 	//Timer enable
-	TMOD = 0x10;//timer 0 mode 1
+	TMOD = 0x10;//timer 1 mode 1
 	TH1 = 0x4B;//high bit value
 	TL1 = 0x92;//low bit value
 	TR1 = 0;//turn off timer 0
