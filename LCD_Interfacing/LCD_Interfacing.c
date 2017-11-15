@@ -2,8 +2,7 @@
 // port as control bus, and displays ¡°Hello World!¡±on the first display line
 #include <reg51.h>
 
-sbit M0 = P0^0;
-sbit M1 = P0^1;
+sbit mode = P0^0;
 
 #define ldata P2
 #define COMMAND 0
@@ -21,15 +20,30 @@ void lcdready(void);
 
 void main(void)
 {
+	unsigned bit counter = 0;
   unsigned char code msg[]="Hello World!";
   unsigned char i=0;
   init_lcd();                                                                                       
 
-  while (msg[i]!='\0') 
-   write_to_lcd(msg[i++],LCD_DATA);
+	
+	while (1)
+	{
+			if (mode == 0)
+			{
+					while (msg[i]!='\0') 
+							write_to_lcd(msg[i++],LCD_DATA);
+			}
+			else 
+			{
+					while (msg[i]!='\0') 
+							write_to_lcd(msg[i++] + counter,LCD_DATA);
+					counter++;
+					if (counter == 99) counter = 0; //Once counter hits 99, immediately reset to 0 for next iteration
+			}
+	}
 
-  while (1);
 }
+
 
 // setup LCD for the required display 
 void init_lcd()
