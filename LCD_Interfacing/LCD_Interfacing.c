@@ -2,6 +2,9 @@
 // port as control bus, and displays ¡°Hello World!¡±on the first display line
 #include <reg51.h>
 
+sbit M0 = P0^0;
+sbit M1 = P0^1;
+
 #define ldata P2
 #define COMMAND 0
 #define LCD_DATA 1
