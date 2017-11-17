@@ -21,6 +21,11 @@ void main(void)
 {
 	unsigned int count;
 	
+	//Initializing every decimal place to 0
+	char million = 0x30;
+	char hundredK = 0x30;
+	char tenK = 0x30;
+	char thousand = 0x30;
 	char hundred = 0x30;
 	char ten= 0x30;
 	char one = 0x30;
@@ -34,7 +39,7 @@ void main(void)
    write_to_lcd(ctr[i++],LCD_DATA);
 	
 	
-	for (count = 0; count <= 2000; count++){		
+	for (count = 0; count <= 99999999; count++){		
 		if (one > 0x39){
 			one = 0x30;
 			ten++;
@@ -43,20 +48,53 @@ void main(void)
 				hundred++;
 				if (hundred > 0x39){
 					hundred = 0x30;
+					thousand++;
+					if (thousand > 0x39){
+						thousand = 0x30;
+						tenK++;
+						if (tenK > 0x39){
+							tenK = 0x30;
+							hundredK++;
+							if (hundredK > 0x39){
+								hundredK = 0x39;
+								million++;
+								if (million > 0x39){
+									million = 0x39;
+								}
+							}
+						}
+					}
 				}
 			}
 		}
 		
 		//Constantly rewriting/updating all digits.
 		//Note: Write MSB first. If LSB is written first, order is reversed. 00 -> 10 -> 20 -> 30
+		//Can disable up to what you want to display.
+		
+		/*Can potentially write up to 999 million if you are
+		patient enough. There is a limit as lowering the delay
+		will distort least significant bit.
+		/*
+		
+		/*
+		write_to_lcd(million,LCD_DATA);
+		write_to_lcd(hundredK,LCD_DATA);
+		write_to_lcd(tenK,LCD_DATA);
+		*/
+		write_to_lcd(thousand,LCD_DATA);
 		write_to_lcd(hundred,LCD_DATA);
 		write_to_lcd(ten,LCD_DATA);
 		write_to_lcd(one,LCD_DATA);
 		
 		one++; //Incrementing least significant bit
 		
-		MSDelay(10);
-		write_to_lcd(0x88,COMMAND); //Sending cursor to position 8 (Hundred's location)
+		MSDelay(1);
+		
+		/*Resets cursor position to start of number.
+		Only changes where you want to move number, 
+		does not change no matter how big number is.*/
+		write_to_lcd(0x88,COMMAND); 
 	}
 	
   while (1);
@@ -108,6 +146,7 @@ void MSDelay(unsigned int itime)
 
    for (i=0;i<itime;i++)
      for (j=0;j<1275;j++);
+		//for (j=0;j<1;j++); //Cannot catch up to such a quick speed
 }
 
 // wait for LCD to become ready

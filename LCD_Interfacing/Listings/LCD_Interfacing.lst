@@ -1,4 +1,4 @@
-C51 COMPILER V9.56.0.0   LCD_INTERFACING                                                   11/16/2017 22:29:40 PAGE 1   
+C51 COMPILER V9.56.0.0   LCD_INTERFACING                                                   11/16/2017 23:25:17 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE LCD_INTERFACING
@@ -31,126 +31,167 @@ line level    source
   21          {
   22   1        unsigned int count;
   23   1        
-  24   1        char hundred = 0x30;
-  25   1        char ten= 0x30;
-  26   1        char one = 0x30;
-  27   1        
-  28   1        unsigned char code msg[]="Hello John";
-  29   1        unsigned char code ctr[]="Counter:";
-  30   1        unsigned char i=0;
-  31   1        init_lcd();                                                                                       
-  32   1      
-  33   1        while (ctr[i]!='\0') 
-  34   1         write_to_lcd(ctr[i++],LCD_DATA);
-  35   1        
-  36   1        
-  37   1        for (count = 0; count <= 2000; count++){    
-  38   2          if (one > 0x39){
-  39   3            one = 0x30;
-  40   3            ten++;
-  41   3            if (ten > 0x39){
-  42   4              ten = 0x30;
-  43   4              hundred++;
-  44   4              if (hundred > 0x39){
-  45   5                hundred = 0x30;
-  46   5              }
-  47   4            }
-  48   3          }
-  49   2          
-  50   2          //Constantly rewriting/updating all digits.
-  51   2          //Note: Write MSB first. If LSB is written first, order is reversed. 00 -> 10 -> 20 -> 30
-  52   2          write_to_lcd(hundred,LCD_DATA);
-  53   2          write_to_lcd(ten,LCD_DATA);
-  54   2          write_to_lcd(one,LCD_DATA);
-C51 COMPILER V9.56.0.0   LCD_INTERFACING                                                   11/16/2017 22:29:40 PAGE 2   
+  24   1        //Initializing every decimal place to 0
+  25   1        char million = 0x30;
+  26   1        char hundredK = 0x30;
+  27   1        char tenK = 0x30;
+  28   1        char thousand = 0x30;
+  29   1        char hundred = 0x30;
+  30   1        char ten= 0x30;
+  31   1        char one = 0x30;
+  32   1        
+  33   1        unsigned char code msg[]="Hello John";
+  34   1        unsigned char code ctr[]="Counter:";
+  35   1        unsigned char i=0;
+  36   1        init_lcd();                                                                                       
+  37   1      
+  38   1        while (ctr[i]!='\0') 
+  39   1         write_to_lcd(ctr[i++],LCD_DATA);
+  40   1        
+  41   1        
+  42   1        for (count = 0; count <= 99999999; count++){    
+  43   2          if (one > 0x39){
+  44   3            one = 0x30;
+  45   3            ten++;
+  46   3            if (ten > 0x39){
+  47   4              ten = 0x30;
+  48   4              hundred++;
+  49   4              if (hundred > 0x39){
+  50   5                hundred = 0x30;
+  51   5                thousand++;
+  52   5                if (thousand > 0x39){
+  53   6                  thousand = 0x30;
+  54   6                  tenK++;
+C51 COMPILER V9.56.0.0   LCD_INTERFACING                                                   11/16/2017 23:25:17 PAGE 2   
 
-  55   2          
-  56   2          one++; //Incrementing least significant bit
-  57   2          
-  58   2          MSDelay(10);
-  59   2          write_to_lcd(0x88,COMMAND); //Sending cursor to position 8 (Hundred's location)
-  60   2        }
-  61   1        
-  62   1        while (1);
-  63   1          
-  64   1      }
-*** WARNING C280 IN LINE 28 OF LCD_Interfacing.c: 'msg': unreferenced local variable
-  65          
-  66          
-  67          //  JOHN's Functions //
-  68          
-  69          
-  70          // setup LCD for the required display 
-  71          void init_lcd()
-  72          {
-  73   1        // Function set format: 001 DL N F  * *
-  74   1        // Function set value: 00111000
-  75   1        // DL=1, use 8-bit data bus; N=1,1/16 duty(2 lines),
-  76   1        // F=0, 5x7 dot character font 
-  77   1        write_to_lcd(0x38,COMMAND); 
-  78   1                                    
-  79   1        // Display On/Off Control format: 00001 D C B
-  80   1        // Display On/Off Control value: 00001110
-  81   1        // D=1, display on; C=1, cursor on; B=0, cursor blink off
-  82   1        write_to_lcd(0x0E,COMMAND);
-  83   1      
-  84   1        // Entry mode set format: 000001 I/D S
-  85   1        // Entry mode set value: 00000110
-  86   1        // I/D=1, Increment cursor position; S=0, no display shift
-  87   1        write_to_lcd(0x06,COMMAND);
-  88   1      
-  89   1        // Clear display and returns cursor to the home position(address 0) 
-  90   1        write_to_lcd(0x01,COMMAND);
-  91   1      }
-  92          
-  93          // write a command or a character to LCD
-  94          void write_to_lcd(unsigned char value, bit mode)
-  95          {
-  96   1        lcdready();
-  97   1        ldata = value; 
-  98   1        rs = mode; // set for data, reset for command
-  99   1        rw = 0;
- 100   1        en = 1;
- 101   1        MSDelay(1);
- 102   1        en = 0;
- 103   1      }
+  55   6                  if (tenK > 0x39){
+  56   7                    tenK = 0x30;
+  57   7                    hundredK++;
+  58   7                    if (hundredK > 0x39){
+  59   8                      hundredK = 0x39;
+  60   8                      million++;
+  61   8                      if (million > 0x39){
+  62   9                        million = 0x39;
+  63   9                      }
+  64   8                    }
+  65   7                  }
+  66   6                }
+  67   5              }
+  68   4            }
+  69   3          }
+  70   2          
+  71   2          //Constantly rewriting/updating all digits.
+  72   2          //Note: Write MSB first. If LSB is written first, order is reversed. 00 -> 10 -> 20 -> 30
+  73   2          //Can disable up to what you want to display.
+  74   2          
+  75   2          /*Can potentially write up to 999 million if you are
+  76   2          patient enough. There is a limit as lowering the delay
+  77   2          will distort least significant bit.
+  78   2          /*
+  79   2          
+  80   2          /*
+  81   2          write_to_lcd(million,LCD_DATA);
+  82   2          write_to_lcd(hundredK,LCD_DATA);
+  83   2          write_to_lcd(tenK,LCD_DATA);
+  84   2          */
+  85   2          write_to_lcd(thousand,LCD_DATA);
+  86   2          write_to_lcd(hundred,LCD_DATA);
+  87   2          write_to_lcd(ten,LCD_DATA);
+  88   2          write_to_lcd(one,LCD_DATA);
+  89   2          
+  90   2          one++; //Incrementing least significant bit
+  91   2          
+  92   2          MSDelay(1);
+  93   2          
+  94   2          /*Resets cursor position to start of number.
+  95   2          Only changes where you want to move number, 
+  96   2          does not change no matter how big number is.*/
+  97   2          write_to_lcd(0x88,COMMAND); 
+  98   2        }
+  99   1        
+ 100   1        while (1);
+ 101   1          
+ 102   1      }
+*** WARNING C280 IN LINE 33 OF LCD_Interfacing.c: 'msg': unreferenced local variable
+ 103          
  104          
- 105          void MSDelay(unsigned int itime)
- 106          {
- 107   1         unsigned int i, j;
- 108   1      
- 109   1         for (i=0;i<itime;i++)
- 110   1           for (j=0;j<1275;j++);
- 111   1      }
- 112          
- 113          // wait for LCD to become ready
- 114          void lcdready(void)
- 115          {
-C51 COMPILER V9.56.0.0   LCD_INTERFACING                                                   11/16/2017 22:29:40 PAGE 3   
+ 105          //  JOHN's Functions //
+ 106          
+ 107          
+ 108          // setup LCD for the required display 
+ 109          void init_lcd()
+ 110          {
+ 111   1        // Function set format: 001 DL N F  * *
+ 112   1        // Function set value: 00111000
+ 113   1        // DL=1, use 8-bit data bus; N=1,1/16 duty(2 lines),
+ 114   1        // F=0, 5x7 dot character font 
+ 115   1        write_to_lcd(0x38,COMMAND); 
+C51 COMPILER V9.56.0.0   LCD_INTERFACING                                                   11/16/2017 23:25:17 PAGE 3   
 
- 116   1        busy = 1;
- 117   1        en = 1;
- 118   1        rs = 0; // It's a command
- 119   1        rw = 1; // It's a read command
- 120   1        while (busy) {
- 121   2          en = 0;
- 122   2          MSDelay(1);
- 123   2          en = 1;
- 124   2        }
- 125   1        en=0;
- 126   1        rw=0;
- 127   1      }
+ 116   1                                    
+ 117   1        // Display On/Off Control format: 00001 D C B
+ 118   1        // Display On/Off Control value: 00001110
+ 119   1        // D=1, display on; C=1, cursor on; B=0, cursor blink off
+ 120   1        write_to_lcd(0x0E,COMMAND);
+ 121   1      
+ 122   1        // Entry mode set format: 000001 I/D S
+ 123   1        // Entry mode set value: 00000110
+ 124   1        // I/D=1, Increment cursor position; S=0, no display shift
+ 125   1        write_to_lcd(0x06,COMMAND);
+ 126   1      
+ 127   1        // Clear display and returns cursor to the home position(address 0) 
+ 128   1        write_to_lcd(0x01,COMMAND);
+ 129   1      }
+ 130          
+ 131          // write a command or a character to LCD
+ 132          void write_to_lcd(unsigned char value, bit mode)
+ 133          {
+ 134   1        lcdready();
+ 135   1        ldata = value; 
+ 136   1        rs = mode; // set for data, reset for command
+ 137   1        rw = 0;
+ 138   1        en = 1;
+ 139   1        MSDelay(1);
+ 140   1        en = 0;
+ 141   1      }
+ 142          
+ 143          void MSDelay(unsigned int itime)
+ 144          {
+ 145   1         unsigned int i, j;
+ 146   1      
+ 147   1         for (i=0;i<itime;i++)
+ 148   1           for (j=0;j<1275;j++);
+ 149   1          //for (j=0;j<1;j++); //Cannot catch up to such a quick speed
+ 150   1      }
+ 151          
+ 152          // wait for LCD to become ready
+ 153          void lcdready(void)
+ 154          {
+ 155   1        busy = 1;
+ 156   1        en = 1;
+ 157   1        rs = 0; // It's a command
+ 158   1        rw = 1; // It's a read command
+ 159   1        while (busy) {
+ 160   2          en = 0;
+ 161   2          MSDelay(1);
+ 162   2          en = 1;
+ 163   2        }
+ 164   1        en=0;
+ 165   1        rw=0;
+ 166   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    253    ----
+   CODE SIZE        =    338    ----
    CONSTANT SIZE    =     20    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----       7
+   DATA SIZE        =   ----      11
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----       1
 END OF MODULE INFORMATION.
+
+C51 COMPILER V9.56.0.0   LCD_INTERFACING                                                   11/16/2017 23:25:17 PAGE 4   
 
 
 C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
