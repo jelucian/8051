@@ -2,8 +2,6 @@
 // port as control bus, and displays ¡°Hello World!¡±on the first display line
 #include <reg51.h>
 
-sbit mode = P0^0;
-
 #define ldata P2
 #define COMMAND 0
 #define LCD_DATA 1
@@ -12,38 +10,46 @@ sbit rs = P3^6;
 sbit rw = P3^5;
 sbit en = P3^7;
 sbit busy = P2^7; // connected to DB7 on the LCD
+unsigned int z = 0;
 
 void init_lcd();
 void write_to_lcd(unsigned char value, bit mode);
 void MSDelay(unsigned int itime);
 void lcdready(void);
 
+
 void main(void)
 {
-	unsigned bit counter = 0;
-  unsigned char code msg[]="Hello World!";
+	char msb = 0x30;
+	char lsb = 0x30;
+  unsigned char code msg[]="Hellno World!";
+	unsigned char code ctr[]="Counter:";
   unsigned char i=0;
   init_lcd();                                                                                       
 
+  
+	while (ctr[i]!='\0') 
+   write_to_lcd(ctr[i++],LCD_DATA);
 	
-	while (1)
-	{
-			if (mode == 0)
-			{
-					while (msg[i]!='\0') 
-							write_to_lcd(msg[i++],LCD_DATA);
-			}
-			else 
-			{
-					while (msg[i]!='\0') 
-							write_to_lcd(msg[i++] + counter,LCD_DATA);
-					counter++;
-					if (counter == 99) counter = 0; //Once counter hits 99, immediately reset to 0 for next iteration
-			}
+  while (1)
+	{		
+		if (lsb > 0x39){
+			lsb = 0x30;
+			//write_to_lcd(0x88,COMMAND);
+		}
+		if (lsb > 0x39){
+			lsb = 0x30;
+			//write_to_lcd(0x89,COMMAND);
+		}
+		
+		write_to_lcd(lsb,LCD_DATA);
+		lsb++;
+		
+		MSDelay(250);
+		write_to_lcd(0x89,COMMAND);
 	}
-
+		
 }
-
 
 // setup LCD for the required display 
 void init_lcd()
