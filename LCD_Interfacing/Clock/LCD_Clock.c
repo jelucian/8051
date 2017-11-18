@@ -26,47 +26,67 @@ void main(void)
 	char lsbHour = 0x30;
 	char msbMinute = 0x30;
 	char lsbMinute = 0x30;
+	bit meridian = 1;
 	
-	unsigned char code ctr[]="Counter:";
+	unsigned char code time[]="Time ";
   unsigned char i=0;
   init_lcd();                                                                                       
 
-	while (ctr[i]!='\0') 
-   write_to_lcd(ctr[i++],LCD_DATA);
+	while (time[i]!='\0') 
+   write_to_lcd(time[i++],LCD_DATA);
 	
 	
 	for (count = 0; count <= 99999999; count++){		
+		//If lsb minute exceeds 9, reset it to 0 and increment msb minute
 		if (lsbMinute > 0x39){
 			lsbMinute = 0x30;
 			msbMinute++;
+			
+			//If msb minute exceeds 5, reset it to 0 and increment lsb hour
 			if (msbMinute > 0x35){
 				msbMinute = 0x30;
 				lsbHour++;
+				
+				//if lsb hour exceeds 9, reset it to 0 and increment msb hour
 				if (lsbHour > 0x39){
 					lsbHour = 0x30;
 					msbHour++;
 				}
+				//if msb hour exceeds 1 while msb hour is also 1, reset both msb and lsb hours to 0
 				else if (lsbHour > 0x31 & msbHour == 0x31){
 					msbHour = 0x30;
 					lsbHour = 0x30;
+					meridian = ~meridian;
 				}
 			}
 		}
 		
+		//Writing hours
 		write_to_lcd(msbHour,LCD_DATA);
 		write_to_lcd(lsbHour,LCD_DATA);
+		//Writing colon
 		write_to_lcd(0x3A,LCD_DATA);
+		//Writing minutes
 		write_to_lcd(msbMinute,LCD_DATA);
 		write_to_lcd(lsbMinute,LCD_DATA);
-		
-		lsbMinute++; //Incrementing least significant bit
+		//Writing meridians
+		if (meridian){
+				write_to_lcd(0x20,LCD_DATA); //space
+				write_to_lcd(0x41,LCD_DATA); //"A"
+				write_to_lcd(0x4D,LCD_DATA); //"M"
+		}
+		else{
+				write_to_lcd(0x20,LCD_DATA); //space
+				write_to_lcd(0x50,LCD_DATA); //"P"
+				write_to_lcd(0x4D,LCD_DATA); //"M"
+		}
+			
+		lsbMinute++; //Incrementing least significant second
 		
 		MSDelay(5);
 		
-		/*Resets cursor position to start of number.
-		Only changes where you want to move number, 
-		does not change no matter how big number is.*/
-		write_to_lcd(0x88,COMMAND); 
+		//Repositioning cursor to start of time
+		write_to_lcd(0x85,COMMAND); 
 	}
 	
   while (1);

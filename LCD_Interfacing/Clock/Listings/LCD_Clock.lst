@@ -1,4 +1,4 @@
-C51 COMPILER V9.56.0.0   LCD_CLOCK                                                         11/17/2017 22:19:03 PAGE 1   
+C51 COMPILER V9.56.0.0   LCD_CLOCK                                                         11/17/2017 23:34:30 PAGE 1   
 
 
 C51 COMPILER V9.56.0.0, COMPILATION OF MODULE LCD_CLOCK
@@ -36,130 +36,150 @@ line level    source
   26   1        char lsbHour = 0x30;
   27   1        char msbMinute = 0x30;
   28   1        char lsbMinute = 0x30;
-  29   1        
-  30   1        unsigned char code ctr[]="Counter:";
-  31   1        unsigned char i=0;
-  32   1        init_lcd();                                                                                       
-  33   1      
-  34   1        while (ctr[i]!='\0') 
-  35   1         write_to_lcd(ctr[i++],LCD_DATA);
-  36   1        
+  29   1        bit meridian = 1;
+  30   1        
+  31   1        unsigned char code time[]="Time ";
+  32   1        unsigned char i=0;
+  33   1        init_lcd();                                                                                       
+  34   1      
+  35   1        while (time[i]!='\0') 
+  36   1         write_to_lcd(time[i++],LCD_DATA);
   37   1        
-  38   1        for (count = 0; count <= 99999999; count++){    
-  39   2          if (lsbMinute > 0x39){
-  40   3            lsbMinute = 0x30;
-  41   3            msbMinute++;
-  42   3            if (msbMinute > 0x35){
-  43   4              msbMinute = 0x30;
-  44   4              lsbHour++;
-  45   4              if (lsbHour > 0x39){
-  46   5                lsbHour = 0x30;
-  47   5                msbHour++;
-  48   5              }
-  49   4              else if (lsbHour > 0x31 & msbHour == 0x31){
-  50   5                msbHour = 0x30;
-  51   5                lsbHour = 0x30;
-  52   5              }
-  53   4            }
-  54   3          }
-C51 COMPILER V9.56.0.0   LCD_CLOCK                                                         11/17/2017 22:19:03 PAGE 2   
+  38   1        
+  39   1        for (count = 0; count <= 99999999; count++){    
+  40   2          //If lsb minute exceeds 9, reset it to 0 and increment msb minute
+  41   2          if (lsbMinute > 0x39){
+  42   3            lsbMinute = 0x30;
+  43   3            msbMinute++;
+  44   3            
+  45   3            //If msb minute exceeds 5, reset it to 0 and increment lsb hour
+  46   3            if (msbMinute > 0x35){
+  47   4              msbMinute = 0x30;
+  48   4              lsbHour++;
+  49   4              
+  50   4              //if lsb hour exceeds 9, reset it to 0 and increment msb hour
+  51   4              if (lsbHour > 0x39){
+  52   5                lsbHour = 0x30;
+  53   5                msbHour++;
+  54   5              }
+C51 COMPILER V9.56.0.0   LCD_CLOCK                                                         11/17/2017 23:34:30 PAGE 2   
 
-  55   2          
-  56   2          write_to_lcd(msbHour,LCD_DATA);
-  57   2          write_to_lcd(lsbHour,LCD_DATA);
-  58   2          write_to_lcd(0x3A,LCD_DATA);
-  59   2          write_to_lcd(msbMinute,LCD_DATA);
-  60   2          write_to_lcd(lsbMinute,LCD_DATA);
-  61   2          
-  62   2          lsbMinute++; //Incrementing least significant bit
+  55   4              //if msb hour exceeds 1 while msb hour is also 1, reset both msb and lsb hours to 0
+  56   4              else if (lsbHour > 0x31 & msbHour == 0x31){
+  57   5                msbHour = 0x30;
+  58   5                lsbHour = 0x30;
+  59   5                meridian = ~meridian;
+  60   5              }
+  61   4            }
+  62   3          }
   63   2          
-  64   2          MSDelay(5);
-  65   2          
-  66   2          /*Resets cursor position to start of number.
-  67   2          Only changes where you want to move number, 
-  68   2          does not change no matter how big number is.*/
-  69   2          write_to_lcd(0x88,COMMAND); 
-  70   2        }
-  71   1        
-  72   1        while (1);
-  73   1          
-  74   1      }
-  75          
-  76          
-  77          //  JOHN's Functions //
-  78          
-  79          
-  80          // setup LCD for the required display 
-  81          void init_lcd()
-  82          {
-  83   1        // Function set format: 001 DL N F  * *
-  84   1        // Function set value: 00111000
-  85   1        // DL=1, use 8-bit data bus; N=1,1/16 duty(2 lines),
-  86   1        // F=0, 5x7 dot character font 
-  87   1        write_to_lcd(0x38,COMMAND); 
-  88   1                                    
-  89   1        // Display On/Off Control format: 00001 D C B
-  90   1        // Display On/Off Control value: 00001110
-  91   1        // D=1, display on; C=1, cursor on; B=0, cursor blink off
-  92   1        write_to_lcd(0x0E,COMMAND);
-  93   1      
-  94   1        // Entry mode set format: 000001 I/D S
-  95   1        // Entry mode set value: 00000110
-  96   1        // I/D=1, Increment cursor position; S=0, no display shift
-  97   1        write_to_lcd(0x06,COMMAND);
-  98   1      
-  99   1        // Clear display and returns cursor to the home position(address 0) 
- 100   1        write_to_lcd(0x01,COMMAND);
- 101   1      }
- 102          
- 103          // write a command or a character to LCD
- 104          void write_to_lcd(unsigned char value, bit mode)
- 105          {
- 106   1        lcdready();
- 107   1        ldata = value; 
- 108   1        rs = mode; // set for data, reset for command
- 109   1        rw = 0;
- 110   1        en = 1;
- 111   1        MSDelay(1);
- 112   1        en = 0;
- 113   1      }
- 114          
- 115          void MSDelay(unsigned int itime)
- 116          {
-C51 COMPILER V9.56.0.0   LCD_CLOCK                                                         11/17/2017 22:19:03 PAGE 3   
+  64   2          //Writing hours
+  65   2          write_to_lcd(msbHour,LCD_DATA);
+  66   2          write_to_lcd(lsbHour,LCD_DATA);
+  67   2          //Writing colon
+  68   2          write_to_lcd(0x3A,LCD_DATA);
+  69   2          //Writing minutes
+  70   2          write_to_lcd(msbMinute,LCD_DATA);
+  71   2          write_to_lcd(lsbMinute,LCD_DATA);
+  72   2          //Writing meridians
+  73   2          if (meridian){
+  74   3              write_to_lcd(0x20,LCD_DATA); //space
+  75   3              write_to_lcd(0x41,LCD_DATA); //"A"
+  76   3              write_to_lcd(0x4D,LCD_DATA); //"M"
+  77   3          }
+  78   2          else{
+  79   3              write_to_lcd(0x20,LCD_DATA); //space
+  80   3              write_to_lcd(0x50,LCD_DATA); //"P"
+  81   3              write_to_lcd(0x4D,LCD_DATA); //"M"
+  82   3          }
+  83   2            
+  84   2          lsbMinute++; //Incrementing least significant second
+  85   2          
+  86   2          MSDelay(5);
+  87   2          
+  88   2          //Repositioning cursor to start of time
+  89   2          write_to_lcd(0x85,COMMAND); 
+  90   2        }
+  91   1        
+  92   1        while (1);
+  93   1          
+  94   1      }
+  95          
+  96          
+  97          //  JOHN's Functions //
+  98          
+  99          
+ 100          // setup LCD for the required display 
+ 101          void init_lcd()
+ 102          {
+ 103   1        // Function set format: 001 DL N F  * *
+ 104   1        // Function set value: 00111000
+ 105   1        // DL=1, use 8-bit data bus; N=1,1/16 duty(2 lines),
+ 106   1        // F=0, 5x7 dot character font 
+ 107   1        write_to_lcd(0x38,COMMAND); 
+ 108   1                                    
+ 109   1        // Display On/Off Control format: 00001 D C B
+ 110   1        // Display On/Off Control value: 00001110
+ 111   1        // D=1, display on; C=1, cursor on; B=0, cursor blink off
+ 112   1        write_to_lcd(0x0E,COMMAND);
+ 113   1      
+ 114   1        // Entry mode set format: 000001 I/D S
+ 115   1        // Entry mode set value: 00000110
+ 116   1        // I/D=1, Increment cursor position; S=0, no display shift
+C51 COMPILER V9.56.0.0   LCD_CLOCK                                                         11/17/2017 23:34:30 PAGE 3   
 
- 117   1         unsigned int i, j;
+ 117   1        write_to_lcd(0x06,COMMAND);
  118   1      
- 119   1         for (i=0;i<itime;i++)
- 120   1           for (j=0;j<1275;j++);
- 121   1          //for (j=0;j<1;j++); //Cannot catch up to such a quick speed
- 122   1      }
- 123          
- 124          // wait for LCD to become ready
- 125          void lcdready(void)
- 126          {
- 127   1        busy = 1;
- 128   1        en = 1;
- 129   1        rs = 0; // It's a command
- 130   1        rw = 1; // It's a read command
- 131   1        while (busy) {
- 132   2          en = 0;
- 133   2          MSDelay(1);
- 134   2          en = 1;
- 135   2        }
- 136   1        en=0;
- 137   1        rw=0;
- 138   1      }
+ 119   1        // Clear display and returns cursor to the home position(address 0) 
+ 120   1        write_to_lcd(0x01,COMMAND);
+ 121   1      }
+ 122          
+ 123          // write a command or a character to LCD
+ 124          void write_to_lcd(unsigned char value, bit mode)
+ 125          {
+ 126   1        lcdready();
+ 127   1        ldata = value; 
+ 128   1        rs = mode; // set for data, reset for command
+ 129   1        rw = 0;
+ 130   1        en = 1;
+ 131   1        MSDelay(1);
+ 132   1        en = 0;
+ 133   1      }
+ 134          
+ 135          void MSDelay(unsigned int itime)
+ 136          {
+ 137   1         unsigned int i, j;
+ 138   1      
+ 139   1         for (i=0;i<itime;i++)
+ 140   1           for (j=0;j<1275;j++);
+ 141   1          //for (j=0;j<1;j++); //Cannot catch up to such a quick speed
+ 142   1      }
+ 143          
+ 144          // wait for LCD to become ready
+ 145          void lcdready(void)
+ 146          {
+ 147   1        busy = 1;
+ 148   1        en = 1;
+ 149   1        rs = 0; // It's a command
+ 150   1        rw = 1; // It's a read command
+ 151   1        while (busy) {
+ 152   2          en = 0;
+ 153   2          MSDelay(1);
+ 154   2          en = 1;
+ 155   2        }
+ 156   1        en=0;
+ 157   1        rw=0;
+ 158   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    328    ----
-   CONSTANT SIZE    =      9    ----
+   CODE SIZE        =    369    ----
+   CONSTANT SIZE    =      6    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----       8
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----       1
+   BIT SIZE         =   ----       2
 END OF MODULE INFORMATION.
 
 
